@@ -1,0 +1,52 @@
+---
+// Base layout ported from the legacy templates/header.ejs + footer.ejs.
+// Styling comes with the CSS ticket (#2); the theme switcher with #3.
+interface Props {
+  title: string;
+  subtitle?: string;
+  description: string;
+  noindex?: boolean;
+}
+const { title, subtitle, description, noindex = false } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content="kidthales" />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="icon" type="image/png" href="/logo.png" />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+  </head>
+  <body>
+    <a href="#mainContent">Skip to main content</a>
+    <header>
+      <nav>
+        <ul>
+          <li>
+            <a href="/"><img src="/logo.png" alt="kidthales home" width="32" height="32" /></a>
+          </li>
+          <li><a href="/spiderex/">Spiderex</a></li>
+          <li><a href="/pgmmv/">PGMMV</a></li>
+        </ul>
+      </nav>
+    </header>
+    <main id="mainContent">
+      <header>
+        <hgroup>
+          <h1>{title}</h1>
+          {subtitle && <p role="doc-subtitle">{subtitle}</p>}
+        </hgroup>
+      </header>
+      <slot />
+    </main>
+    <footer>
+      <small>© 2024-{year} kidthales. All rights reserved.</small>
+    </footer>
+  </body>
+</html>

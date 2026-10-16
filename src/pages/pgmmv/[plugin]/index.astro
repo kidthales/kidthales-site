@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { pgmmvPlugins } from '../../../data/pgmmv-plugins';
+
+export function getStaticPaths() {
+  return pgmmvPlugins.map((plugin) => ({ params: { plugin: plugin.slug }, props: { name: plugin.name } }));
+}
+
+const { name } = Astro.props;
+---
+
+<BaseLayout title={name} description={`${name} for Pixel Game Maker MV`}>
+  <!-- Parameter reference, action commands, link conditions and downloads arrive with ticket #9. -->
+  <section>
+    <nav aria-label="breadcrumb">
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/pgmmv/">PGMMV</a></li>
+        <li>{name}</li>
+      </ul>
+    </nav>
+  </section>
+</BaseLayout>
