@@ -24,10 +24,31 @@ jobs:
           fi
           echo "OK: no agent or learnings files are tracked."
 
+  build:
+    name: Check, build and route parity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - name: Build (must finish in under 15 seconds)
+        run: |
+          start=$(date +%s)
+          npm run build
+          elapsed=$(( $(date +%s) - start ))
+          echo "Build took ${elapsed}s"
+          if [ "$elapsed" -ge 15 ]; then echo "Build exceeded 15 seconds"; exit 1; fi
+      - run: npm run check:routes
+      - run: npm test
+
   notify:
     name: Notify
     if: always()
-    needs: [no-agent-files]
+    needs: [no-agent-files, build]
     runs-on: ubuntu-latest
     steps:
       - name: Post consolidated status to Discord

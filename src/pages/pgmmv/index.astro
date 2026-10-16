@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { pgmmvPlugins } from '../../data/pgmmv-plugins';
+---
+
+<BaseLayout
+  title="Pixel Game Maker MV Stuff"
+  subtitle="Index of kidthales' PGMMV plugins"
+  description="Index of kidthales' PGMMV plugins"
+>
+  <section>
+    <header>
+      <hgroup>
+        <h2>Plugins</h2>
+        <p>Custom action commands and link conditions that extend PGMMV</p>
+      </hgroup>
+    </header>
+    <ul>
+      {pgmmvPlugins.map((p) => <li><a href={`/pgmmv/${p.slug}/`}>{p.name}</a></li>)}
+    </ul>
+  </section>
+</BaseLayout>
