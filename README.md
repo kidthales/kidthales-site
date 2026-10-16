@@ -13,3 +13,7 @@ Personal site for kidthales: devlog, long-form writing, open-source projects and
 - Conventional Commits.
 - Public repo hygiene: agent configuration and learnings are never tracked here (see `.gitignore`). CI fails if such paths are tracked.
 - Colours come from the Paul Tol schemes; see the epic for the data source.
+
+## License
+
+Source code is licensed under the [GNU Affero General Public License v3.0](LICENSE) (AGPL-3.0). The license for written content (devlog and long-form posts) will be decided separately and recorded here.
