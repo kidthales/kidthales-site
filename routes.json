@@ -1,0 +1,15 @@
+{
+  "description": "Routes that must exist in the build output with the same URLs as the legacy kidthales.com site. See docs in epic #1. /CNAME is deliberately absent until the cutover ticket (#12).",
+  "routes": [
+    "/",
+    "/spiderex/",
+    "/pgmmv/",
+    "/pgmmv/collision-plugin/",
+    "/pgmmv/coordinates-plugin/",
+    "/pgmmv/snap-to-tile-plugin/",
+    "/pgmmv/storage-plugin/",
+    "/404.html",
+    "/assets/spiderex.json"
+  ],
+  "redirects": {}
+}
