@@ -34,6 +34,8 @@ body > header nav {
   justify-content: space-between;
   gap: var(--space-3);
   padding-block: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
 }
 
 body > header nav ul {
@@ -48,6 +50,50 @@ body > header nav ul {
 
 body > header nav li + li {
   margin: 0;
+}
+
+body > header nav li a:not(.brand-link),
+body > header nav li button {
+  padding-inline: var(--space-1);
+}
+
+body > header nav a:not(.brand-link) {
+  text-decoration: none;
+}
+
+body > header nav a:not(.brand-link):hover {
+  text-decoration: underline;
+}
+
+/* Bracketed navigation convention */
+body > header nav ul li:not(.brand-item)::before {
+  content: '[';
+  color: var(--color-text-muted);
+}
+
+body > header nav ul li:not(.brand-item)::after {
+  content: ']';
+  color: var(--color-text-muted);
+}
+
+body > header nav .brand-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background-color: var(--color-contrast-bg);
+  border-radius: var(--radius);
+  overflow: hidden;
+  vertical-align: middle;
+}
+
+body > header nav .brand-link img {
+  display: block;
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
 }
 
 main {
