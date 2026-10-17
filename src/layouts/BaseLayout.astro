@@ -1,7 +1,7 @@
 ---
 import '../styles/main.css';
 // Base layout with anti-FOUC inline script, landmark navigation,
-// accessible theme switcher, and shared footer.
+// accessible theme switcher, and shared footer powered by @kidthales/picotol.
 interface Props {
   title: string;
   subtitle?: string;
@@ -13,7 +13,7 @@ const year = new Date().getFullYear();
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-accent="cyan">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -39,7 +39,7 @@ const year = new Date().getFullYear();
     </script>
   </head>
   <body>
-    <a href="#mainContent">Skip to main content</a>
+    <a href="#mainContent" class="skip-to-content">Skip to main content</a>
     <header>
       <nav>
         <ul>
@@ -65,7 +65,7 @@ const year = new Date().getFullYear();
         </ul>
       </nav>
     </header>
-    <main id="mainContent">
+    <main id="mainContent" tabindex="-1">
       <header>
         <hgroup>
           <h1>{title}</h1>

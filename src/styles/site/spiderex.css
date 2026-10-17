@@ -1,0 +1,35 @@
+/*
+ * Spiderex daily guitar fingering drill generator styles:
+ *   - Warmup permutation cards (.spiderex-warmup-list)
+ *   - String-crossing twister guitar tablature (pre.tablature)
+ */
+.spiderex-warmup-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0;
+  margin-block: 0.75rem 1.5rem;
+  list-style: none;
+}
+
+.spiderex-warmup-list li {
+  margin: 0;
+}
+
+.spiderex-warmup-list code {
+  display: inline-block;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--pt-muted-border);
+  border-radius: var(--pt-radius);
+  background: var(--pt-card-bg);
+}
+
+pre.tablature {
+  white-space: pre;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.25;
+}

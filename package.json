@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
+    "@kidthales/picotol": "file:./vendor/kidthales-picotol-0.1.0.tgz",
     "astro": "^7.4.0"
   },
   "devDependencies": {

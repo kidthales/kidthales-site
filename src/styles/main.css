@@ -1,22 +1,10 @@
 /*
- * Entry stylesheet. Layer order is declared first; each @import assigns its file to a layer.
+ * Entry stylesheet powered by @kidthales/picotol (Paul Tol + Pico CSS architecture).
  *
- *   shared/  non-brand, reusable files (see the shared-assets convention, ticket #10)
- *   site/    brand decisions for this site (colour mapping)
- *   vendor/  copies of generated Paul Tol colour values (see vendor/tol/SYNC.md)
+ *   @kidthales/picotol  provides @layer tokens, base, layout, content, forms, nav, components
+ *   ./site/*            site-specific extensions (bracketed nav, logo badge, Spiderex drills)
  */
-@layer reset, tokens, base, layout, components;
+@import '@kidthales/picotol';
 
-@import './shared/reset.css' layer(reset);
-
-@import './vendor/tol/bright.css' layer(tokens);
-@import './vendor/tol/dark.css' layer(tokens);
-@import './vendor/tol/pale.css' layer(tokens);
-@import './vendor/tol/light.css' layer(tokens);
-@import './shared/tokens-base.css' layer(tokens);
-@import './site/tokens.css' layer(tokens);
-
-@import './shared/typography.css' layer(base);
-@import './shared/base.css' layer(base);
-@import './shared/layout.css' layer(layout);
-@import './shared/components.css' layer(components);
+@import './site/branding.css';
+@import './site/spiderex.css';
