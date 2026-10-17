@@ -68,12 +68,12 @@ form:has(> input[type='submit'], > button[type='submit']) {
 
 .theme-toggle {
   display: inline-block;
-  padding: 0;
+  padding-block: 0;
+  padding-inline: var(--space-1);
   border: 0;
   background: transparent;
   color: var(--color-link);
   font: inherit;
-  font-size: var(--text-base);
   text-decoration: none;
   cursor: pointer;
 }
@@ -82,6 +82,30 @@ form:has(> input[type='submit'], > button[type='submit']) {
   background: transparent;
   color: var(--color-link-hover);
   text-decoration: underline;
+}
+
+.theme-toggle::after {
+  content: ' light mode';
+}
+
+:root[data-theme='light'] .theme-toggle::after {
+  content: ' dark mode';
+}
+
+:root[data-theme='dark'] .theme-toggle::after {
+  content: ' light mode';
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) .theme-toggle::after {
+    content: ' dark mode';
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .theme-toggle::after {
+    content: ' light mode';
+  }
 }
 
 

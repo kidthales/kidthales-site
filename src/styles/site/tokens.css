@@ -17,6 +17,7 @@
   --color-link-hover: light-dark(var(--tol-dark-7), var(--tol-light-light_cyan));
   --color-focus: light-dark(var(--tol-dark-3), var(--tol-bright-yellow));
   --color-mark-bg: light-dark(var(--tol-pale-3), var(--tol-dark-9));
+  --color-contrast-bg: light-dark(var(--tol-dark-10), var(--tol-light-pale_grey));
 }
 
 :root[data-theme='light'] {
