@@ -47,10 +47,11 @@ export async function initSpiderex(): Promise<void> {
       ul.className = 'spiderex-warmup-list';
       for (const pat of drills.warmup) {
         const li = document.createElement('li');
-        li.innerHTML = `<pre><code>${pat}</code></pre>`;
+        li.innerHTML = `<code>${pat}</code>`;
         ul.appendChild(li);
       }
       warmupTarget!.replaceChildren(ul);
+
 
       // Render twister tablature
       const pre = document.createElement('pre');
@@ -83,6 +84,18 @@ export async function initSpiderex(): Promise<void> {
   const initialDate = resolveDateFromUrl();
   render(initialDate);
 
+  // Date input change handler (triggers automatically on calendar date selection)
+  queryInput.addEventListener('change', () => {
+    const val = queryInput.value.trim();
+    const valid = parseDate(val);
+    if (valid) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('date', valid);
+      window.history.pushState({}, '', url.toString());
+      render(valid);
+    }
+  });
+
   // Form submit handler
   if (form) {
     form.addEventListener('submit', (e) => {
@@ -99,6 +112,7 @@ export async function initSpiderex(): Promise<void> {
       }
     });
   }
+
 
   // Handle browser back/forward history
   window.addEventListener('popstate', () => {
