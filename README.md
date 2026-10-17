@@ -31,3 +31,7 @@ Requires Node 22.22 or newer.
 | `npm test` | Unit tests |
 
 `routes.json` is the committed list of URLs that must keep working from the legacy site. Anything dropped or moved needs an entry in its `redirects` map and an owner-approved note before the cutover (#12).
+
+## Previewing
+
+There is no hosted preview before the production cutover (#12). Preview locally with `npm run build && npm run preview`, or download the `site-dist` artifact from a CI run (kept for 7 days).
