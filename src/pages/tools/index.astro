@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { tools } from '../../data/tools';
+---
+
+<BaseLayout
+  title="Tools"
+  subtitle="Small web tools and utilities"
+  description="Interactive utilities and small web tools by kidthales."
+>
+  <nav aria-label="breadcrumb">
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li>Tools</li>
+    </ul>
+  </nav>
+
+  <section>
+    <h2>Available Tools</h2>
+    <ul>
+      {
+        tools.map((tool) => (
+          <li>
+            <a href={tool.href}>
+              <strong>{tool.name}</strong>
+            </a>
+            : {tool.description}
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</BaseLayout>
