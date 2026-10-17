@@ -148,6 +148,10 @@ dialog::backdrop {
   background: rgb(0 0 0 / 0.6);
 }
 
+nav[aria-label='breadcrumb'] {
+  margin-block-end: var(--space-4);
+}
+
 nav[aria-label='breadcrumb'] ul {
   display: flex;
   flex-wrap: wrap;
@@ -166,3 +170,35 @@ nav[aria-label='breadcrumb'] li + li::before {
   margin-inline-end: var(--space-2);
   color: var(--color-text-muted);
 }
+
+.spiderex-warmup-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  padding: 0;
+  margin-block: var(--space-3) var(--space-4);
+  list-style: none;
+}
+
+.spiderex-warmup-list li {
+  margin: 0;
+}
+
+.spiderex-warmup-list code {
+  display: inline-block;
+  font-size: var(--text-lg);
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  padding: var(--space-2) var(--space-3);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+pre.tablature {
+  white-space: pre;
+  overflow-x: auto;
+  font-size: var(--text-sm);
+  line-height: var(--leading-tight);
+}
+
