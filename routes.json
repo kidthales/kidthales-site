@@ -11,5 +11,7 @@
     "/404.html",
     "/assets/spiderex.json"
   ],
-  "redirects": {}
+  "redirects": {
+    "/spiderex/": "/tools/spiderex/"
+  }
 }
