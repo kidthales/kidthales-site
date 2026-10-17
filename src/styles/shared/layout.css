@@ -1,0 +1,69 @@
+/* Page layout for the landmark structure: skip link, banner nav, main, footer. */
+body {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+
+body > a[href='#mainContent'] {
+  position: absolute;
+  inset-inline-start: var(--space-2);
+  inset-block-start: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-bg);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius);
+  transform: translateY(-200%);
+}
+
+body > a[href='#mainContent']:focus {
+  transform: none;
+  z-index: 10;
+}
+
+body > header,
+main,
+body > footer {
+  width: min(100% - 2 * var(--space-3), var(--container));
+  margin-inline: auto;
+}
+
+body > header nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-block: var(--space-3);
+}
+
+body > header nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+body > header nav li + li {
+  margin: 0;
+}
+
+main {
+  padding-block: var(--space-3) var(--space-5);
+}
+
+main > header {
+  margin-block-end: var(--space-4);
+}
+
+body > footer {
+  padding-block: var(--space-4);
+  border-block-start: var(--border-width) solid var(--color-border);
+  color: var(--color-text-muted);
+}
+
+section + section {
+  margin-block-start: var(--space-4);
+}
