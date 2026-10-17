@@ -9,4 +9,7 @@ export default defineConfig({
   trailingSlash: 'always',
   build: { format: 'directory' },
   integrations: [sitemap()],
+  redirects: {
+    '/spiderex/': '/tools/spiderex/',
+  },
 });

@@ -1,0 +1,52 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Spiderex"
+  subtitle="Daily guitar fingering drills"
+  description="Daily guitar fingering drills: 4 warmup permutations and a string-crossing twister tablature."
+>
+  <nav aria-label="breadcrumb">
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/tools/">Tools</a></li>
+      <li>Spiderex</li>
+    </ul>
+  </nav>
+
+  <div data-spiderex>
+    <form class="form-row" method="get">
+      <label for="spiderex-date">Date</label>
+      <input
+        type="date"
+        id="spiderex-date"
+        name="date"
+        placeholder="yyyy-mm-dd"
+        aria-label="Date"
+        required
+        data-spiderex-query
+      />
+      <input type="submit" value="Query Date" />
+    </form>
+
+    <section>
+      <h2>Warmup</h2>
+      <p>
+        Play each pattern ascending &amp; descending across all strings, with straight &amp; triplet feel. Once you are
+        comfortable with the patterns, phase in some string skipping.
+      </p>
+      <div data-spiderex-warmup-results>
+        <p>Loading drills...</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Twister</h2>
+      <p>Built from the warmup patterns listed above.</p>
+      <div data-spiderex-twister-results></div>
+    </section>
+  </div>
+
+  <script src="../../../scripts/spiderex-client.ts"></script>
+</BaseLayout>

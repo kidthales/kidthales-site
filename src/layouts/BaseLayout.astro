@@ -1,7 +1,7 @@
 ---
 import '../styles/main.css';
-// Base layout ported from the legacy templates/header.ejs + footer.ejs.
-// Styling: src/styles (ticket #2); the theme switcher comes with #3.
+// Base layout with anti-FOUC inline script, landmark navigation,
+// accessible theme switcher, and shared footer.
 interface Props {
   title: string;
   subtitle?: string;
@@ -23,6 +23,20 @@ const year = new Date().getFullYear();
     {noindex && <meta name="robots" content="noindex" />}
     <link rel="icon" type="image/png" href="/logo.png" />
     <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <script is:inline>
+      (() => {
+        try {
+          const stored = localStorage.getItem('theme');
+          if (stored === 'light' || stored === 'dark') {
+            document.documentElement.dataset.theme = stored;
+          } else {
+            const legacy = localStorage.getItem('app/theme/prefers-dark');
+            if (legacy === 'true') document.documentElement.dataset.theme = 'dark';
+            else if (legacy === 'false') document.documentElement.dataset.theme = 'light';
+          }
+        } catch (_) {}
+      })();
+    </script>
   </head>
   <body>
     <a href="#mainContent">Skip to main content</a>
@@ -32,8 +46,20 @@ const year = new Date().getFullYear();
           <li>
             <a href="/"><img src="/logo.png" alt="kidthales home" width="32" height="32" /></a>
           </li>
-          <li><a href="/spiderex/">Spiderex</a></li>
+          <li><a href="/tools/">Tools</a></li>
           <li><a href="/pgmmv/">PGMMV</a></li>
+        </ul>
+        <ul>
+          <li>
+            <button
+              type="button"
+              class="theme-toggle"
+              data-theme-toggle
+              aria-label="Toggle colour theme"
+            >
+              Theme: <span data-theme-label>System</span>
+            </button>
+          </li>
         </ul>
       </nav>
     </header>
@@ -49,5 +75,6 @@ const year = new Date().getFullYear();
     <footer>
       <small>© 2024-{year} kidthales. All rights reserved.</small>
     </footer>
+    <script src="../scripts/theme.ts"></script>
   </body>
 </html>
