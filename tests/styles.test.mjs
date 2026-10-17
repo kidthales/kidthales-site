@@ -6,111 +6,96 @@ import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const styles = join(root, 'src', 'styles');
-const read = (p) => readFileSync(join(styles, p), 'utf8');
+const picotolRoot = join(root, 'node_modules', '@kidthales', 'picotol');
 const stripComments = (s) => s.replace(/\/\*[\s\S]*?\*\//g, '');
 
-// ---- minimal custom-property resolver (var() and light-dark() over hex values) ----
-const files = ['vendor/tol/bright.css', 'vendor/tol/dark.css', 'vendor/tol/pale.css', 'vendor/tol/light.css', 'shared/tokens-base.css', 'site/tokens.css'];
-const props = new Map();
-for (const f of files) {
-  for (const m of stripComments(read(f)).matchAll(/(--[\w-]+):\s*([^;]+);/g)) props.set(m[1], m[2].trim());
-}
+const tolData = JSON.parse(readFileSync(join(picotolRoot, 'data', 'tol-qualitative.json'), 'utf8'));
+const allowedHexSet = new Set(tolData.allowedHexes.map((h) => h.toUpperCase()));
 
-function resolve(value, theme, depth = 0) {
-  if (depth > 10) throw new Error(`var() nesting too deep: ${value}`);
-  let v = value.replace(/var\((--[\w-]+)\)/g, (_, name) => {
-    assert.ok(props.has(name), `undefined custom property ${name}`);
-    return resolve(props.get(name), theme, depth + 1);
-  });
-  v = v.replace(/light-dark\(\s*(#[0-9A-Fa-f]{6})\s*,\s*(#[0-9A-Fa-f]{6})\s*\)/g, (_, light, dark) => (theme === 'light' ? light : dark));
-  return v.trim();
-}
-const color = (name, theme) => {
-  assert.ok(props.has(name), `missing token ${name}`);
-  const v = resolve(props.get(name), theme);
-  assert.match(v, /^#[0-9A-Fa-f]{6}$/, `${name} did not resolve to a hex colour: ${v}`);
-  return v;
-};
-
-// ---- WCAG 2.x contrast ----
 const lum = (hex) => {
-  const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
+  const [r, g, b] = [1, 3, 5]
+    .map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
+    .map((c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 };
+
 const ratio = (a, b) => {
   const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x);
   return (hi + 0.05) / (lo + 0.05);
 };
 
-// [foreground token, background token, minimum ratio]
-const pairs = [
-  ['--color-text', '--color-bg', 4.5],
-  ['--color-text-muted', '--color-bg', 4.5],
-  ['--color-text', '--color-surface', 4.5],
-  ['--color-text-muted', '--color-surface', 4.5],
-  ['--color-link', '--color-bg', 4.5],
-  ['--color-link', '--color-surface', 4.5],
-  ['--color-link-hover', '--color-bg', 4.5],
-  ['--color-bg', '--color-link', 4.5], // button text on button background
-  ['--color-bg', '--color-link-hover', 4.5], // button text on hover background
-  ['--color-text', '--color-mark-bg', 4.5],
-  ['--color-border', '--color-bg', 3], // input borders (non-text UI)
-  ['--color-focus', '--color-bg', 3], // focus ring
-];
+const schemeColor = (schemeId, nameOrIndex) => {
+  const list = tolData.schemes[schemeId].colors;
+  if (typeof nameOrIndex === 'number') return list[nameOrIndex].hex;
+  return list.find((c) => c.name === nameOrIndex).hex;
+};
 
-for (const theme of ['light', 'dark']) {
-  test(`contrast in the ${theme} theme meets WCAG AA`, () => {
-    const report = [];
-    for (const [fg, bg, min] of pairs) {
-      const r = ratio(color(fg, theme), color(bg, theme));
-      report.push(`${fg} on ${bg}: ${r.toFixed(2)} (min ${min})`);
-      assert.ok(r >= min, `${theme}: ${fg} on ${bg} is ${r.toFixed(2)}, needs ${min}`);
-    }
-    if (process.env.SHOW_CONTRAST) console.log(report.join('\n'));
-  });
-}
+const achromaticColor = (name) => tolData.achromatic.find((a) => a.name === name).hex;
 
-test('every colour token resolves to a Tol value or white', () => {
-  const allowed = new Set(
-    files.slice(0, 4).flatMap((f) => [...stripComments(read(f)).matchAll(/:\s*(#[0-9A-Fa-f]{6});/g)].map((m) => m[1].toUpperCase())),
-  );
-  allowed.add('#FFFFFF');
-  for (const name of [...props.keys()].filter((k) => k.startsWith('--color-'))) {
-    for (const theme of ['light', 'dark']) assert.ok(allowed.has(color(name, theme).toUpperCase()), `${name} (${theme}) is not a Tol value`);
-  }
-});
-
-test('cascade layers are declared in order and every import is assigned to a layer', () => {
-  const main = stripComments(read('main.css'));
-  assert.match(main, /@layer reset, tokens, base, layout, components;/);
-  const imports = [...main.matchAll(/@import\s+'([^']+)'([^;]*);/g)];
-  assert.ok(imports.length >= 8);
-  for (const [, path, rest] of imports) {
-    assert.match(rest, /layer\((reset|tokens|base|layout|components)\)/, `${path} has no layer`);
-    assert.ok(existsSync(join(styles, path)), `${path} does not exist`);
-  }
-});
-
-test('shared styles do not reference brand or vendor tokens', () => {
-  for (const f of readdirSync(join(styles, 'shared'))) {
-    const css = stripComments(read(`shared/${f}`));
-    assert.doesNotMatch(css, /--tol-/, `${f} references a Tol token`);
-  }
-});
-
-test('dependency tree has no Sass, Bootstrap, Tailwind or Pico', () => {
+test('dependency tree integrates @kidthales/picotol and has no Sass, Bootstrap, Tailwind or Pico', () => {
   const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
+  assert.ok(pkg.dependencies['@kidthales/picotol'], '@kidthales/picotol must be in dependencies');
   const names = Object.keys({ ...pkg.dependencies, ...pkg.devDependencies });
-  for (const banned of [/sass/, /bootstrap/, /tailwind/, /pico/]) {
+  for (const banned of [/sass/, /bootstrap/, /tailwind/, /^@?picocss/]) {
     assert.deepEqual(names.filter((n) => banned.test(n)), [], String(banned));
   }
 });
 
-test('vendored palette files are documented in SYNC.md and carry the attribution header', () => {
-  const sync = read('vendor/tol/SYNC.md');
-  assert.match(sync, /Source commit/);
-  for (const n of ['bright', 'dark', 'pale', 'light']) {
-    assert.ok(sync.includes(n), `SYNC.md does not mention ${n}`);
-    assert.match(read(`vendor/tol/${n}.css`), /not affiliated with or endorsed by Paul Tol/);
+test('main.css imports @kidthales/picotol and site extensions cleanly', () => {
+  const main = stripComments(readFileSync(join(styles, 'main.css'), 'utf8'));
+  assert.match(main, /@import\s+'@kidthales\/picotol';/);
+  assert.match(main, /@import\s+'\.\/site\/branding\.css';/);
+  assert.match(main, /@import\s+'\.\/site\/spiderex\.css';/);
+  assert.ok(!existsSync(join(styles, 'vendor')), 'Redundant src/styles/vendor directory must be removed');
+  assert.ok(!existsSync(join(styles, 'shared')), 'Redundant src/styles/shared directory must be removed');
+});
+
+test('contrast in light and dark themes (data-accent="cyan") meets WCAG 2.2 AA/AAA', () => {
+  const lightBg = achromaticColor('white'); // #FFFFFF
+  const lightText = achromaticColor('black'); // #000000
+  const lightMuted = achromaticColor('grey-800'); // #444444
+  const lightBorder = achromaticColor('grey-500'); // #888888
+
+  const darkBg = achromaticColor('black'); // #000000
+  const darkText = achromaticColor('white'); // #FFFFFF
+  const darkMuted = achromaticColor('grey-200'); // #DDDDDD
+  const darkBorder = achromaticColor('grey-700'); // #666666
+
+  // Cyan accent ladder (--pt-p1..--pt-p5)
+  const cyanP1 = schemeColor('pale', 1); // #CCEEFF
+  const cyanP2 = schemeColor('light', 'light_cyan'); // #99DDFF
+  const cyanP3 = schemeColor('vibrant', 'blue'); // #0077BB
+  const cyanP4 = schemeColor('dark', 6); // #117788
+  const cyanP5 = schemeColor('dark', 5); // #006644
+
+  // Light theme checks
+  assert.ok(ratio(lightText, lightBg) >= 7.0, 'Light text AAA');
+  assert.ok(ratio(lightMuted, lightBg) >= 7.0, 'Light muted text AAA');
+  assert.ok(ratio(lightBorder, lightBg) >= 3.0, 'Light border SC 1.4.11 >= 3.0');
+  assert.ok(ratio(cyanP4, lightBg) >= 4.5, 'Light cyan primary link AA');
+  assert.ok(ratio(cyanP5, lightBg) >= 4.5, 'Light cyan primary link hover AA');
+  assert.ok(ratio(cyanP1, lightText) >= 7.0, 'Light cyan button fill AAA');
+  assert.ok(ratio(cyanP2, lightText) >= 7.0, 'Light cyan button hover fill AAA');
+
+  // Dark theme checks
+  assert.ok(ratio(darkText, darkBg) >= 7.0, 'Dark text AAA');
+  assert.ok(ratio(darkMuted, darkBg) >= 7.0, 'Dark muted text AAA');
+  assert.ok(ratio(darkBorder, darkBg) >= 3.0, 'Dark border SC 1.4.11 >= 3.0');
+  assert.ok(ratio(cyanP2, darkBg) >= 7.0, 'Dark cyan primary link AAA');
+  assert.ok(ratio(cyanP1, darkBg) >= 7.0, 'Dark cyan primary link hover AAA');
+  assert.ok(ratio(cyanP4, darkText) >= 4.5, 'Dark cyan button fill AA');
+  assert.ok(ratio(cyanP3, darkText) >= 4.5, 'Dark cyan button hover fill AA');
+});
+
+test('site extension stylesheets maintain 100% Paul Tol hex purity and --pt-* token usage', () => {
+  const siteDir = join(styles, 'site');
+  for (const file of readdirSync(siteDir).filter((f) => f.endsWith('.css'))) {
+    const css = stripComments(readFileSync(join(siteDir, file), 'utf8'));
+    assert.doesNotMatch(css, /--color-/, `${file} must not reference legacy --color-* tokens`);
+    assert.doesNotMatch(css, /--tc-/, `${file} must not reference legacy --tc-* tokens`);
+    assert.doesNotMatch(css, /\b(?:rgb|rgba|hsl|hsla|oklch|lab|lch)\s*\(/i, `${file} uses forbidden color function`);
+    for (const m of css.matchAll(/#[0-9A-Fa-f]{3,8}\b/g)) {
+      assert.ok(allowedHexSet.has(m[0].toUpperCase()), `${file} contains non-Tol hex ${m[0]}`);
+    }
   }
 });

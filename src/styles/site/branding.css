@@ -1,0 +1,115 @@
+/*
+ * Site-specific layout & branding overrides on top of @kidthales/picotol:
+ *   - Sticky footer 3-row viewport layout
+ *   - Bracketed mono navigation convention ([ Tools ], [ PGMMV ], [ dark mode ])
+ *   - 32x32 brand logo badge
+ *   - Theme toggle pill
+ */
+body {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto 1fr auto;
+}
+
+body > header nav {
+  font-family: var(--pt-font-mono);
+  font-size: 0.875rem;
+}
+
+/* Bracketed navigation convention */
+body > header nav ul li:not(.brand-item)::before {
+  content: '[';
+  color: var(--pt-muted-color);
+}
+
+body > header nav ul li:not(.brand-item)::after {
+  content: ']';
+  color: var(--pt-muted-color);
+}
+
+body > header nav li a:not(.brand-link) {
+  padding-inline: 0.25rem;
+}
+
+body > header nav .brand-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background-color: var(--pt-card-bg);
+  border-radius: var(--pt-radius);
+  overflow: hidden;
+  vertical-align: middle;
+}
+
+body > header nav .brand-link img {
+  display: block;
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+/* Theme toggle text button */
+.theme-toggle {
+  display: inline-block;
+  padding-block: 0;
+  padding-inline: 0.25rem;
+  border: 0;
+  background: transparent;
+  color: var(--pt-primary);
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.theme-toggle:hover {
+  background: transparent;
+  border-color: transparent;
+  color: var(--pt-primary-hover);
+  text-decoration: underline;
+}
+
+.theme-toggle::after {
+  content: ' light mode';
+}
+
+:root[data-theme='light'] .theme-toggle::after {
+  content: ' dark mode';
+}
+
+:root[data-theme='dark'] .theme-toggle::after {
+  content: ' light mode';
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) .theme-toggle::after {
+    content: ' dark mode';
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .theme-toggle::after {
+    content: ' light mode';
+  }
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-block-end: 1.5rem;
+}
+
+.form-row label {
+  margin-block-end: 0;
+}
+
+.form-row input[type='date'],
+.form-row input[type='submit'] {
+  width: auto;
+  margin-block-end: 0;
+}
