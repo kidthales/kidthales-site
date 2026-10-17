@@ -43,6 +43,12 @@ jobs:
           echo "Build took ${elapsed}s"
           if [ "$elapsed" -ge 15 ]; then echo "Build exceeded 15 seconds"; exit 1; fi
       - run: npm run check:routes
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site-dist
+          path: dist
+          retention-days: 7
+          if-no-files-found: error
       - run: npm test
 
   notify:
@@ -66,3 +72,4 @@ jobs:
             *) title="CI passed"; color=4388484 ;;
           esac
           curl -sS -H "Content-Type: application/json" -d "{\"embeds\":[{\"title\":\"$title\",\"description\":\"$REPO ($REF)\\n[View run]($RUN_URL)\",\"color\":$color}]}" "$WEBHOOK"
+
