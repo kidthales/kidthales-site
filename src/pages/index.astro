@@ -3,7 +3,159 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout
-  title="kidthales' Static Content & Other Sundry"
-  subtitle="The homepage for kidthales"
-  description="The homepage for kidthales"
-/>
+  title="kidthales"
+  subtitle="Independent Software Architect & Systems Craftsman"
+  description="Personal site and open-source portfolio for kidthales: accessible design systems, headless devops toolchains, and high-integrity software engineering."
+>
+  <section class="hero-overview">
+    <p class="lead-text">
+      I engineer high-integrity desktop applications, accessible design systems, and headless devops toolchains. My work emphasizes local-first data sovereignty, minimal runtime overhead, and mathematically verified accessibility.
+    </p>
+
+    <div class="hero-cta-row">
+      <a href="/projects/" role="button">Explore Projects</a>
+      <a href="/tools/" role="button" class="secondary">Interactive Tools</a>
+      <a
+        href="https://github.com/kidthales"
+        role="button"
+        class="secondary"
+        target="_blank"
+        rel="noopener"
+      >
+        GitHub Profile
+      </a>
+    </div>
+  </section>
+
+  <section class="domains-overview">
+    <header class="section-heading">
+      <h2>Focus Areas & Open Source</h2>
+      <p>Core engineering domains and active software initiatives.</p>
+    </header>
+
+    <div class="grid">
+      <article class="domain-card">
+        <header>
+          <h3>Accessible UI & Design Systems</h3>
+        </header>
+        <p>
+          Ultra-minified, standards-compliant CSS frameworks and code generators built strictly on scientifically calibrated, colorblind-safe color schemes.
+        </p>
+        <ul class="domain-highlights">
+          <li>
+            <a href="/projects/picotol/"><strong>@kidthales/picotol</strong></a>: Pure-CSS semantic HTML framework under 10 KB with full WCAG 2.2 AA/AAA certification across light and dark modes.
+          </li>
+          <li>
+            <a href="/projects/tol-palettes/"><strong>@kidthales/tol-palettes</strong></a>: 22 schema-validated color schemes with multi-environment generators for CSS, TypeScript, Python, Godot 4, and Aseprite.
+          </li>
+        </ul>
+        <footer>
+          <a href="/projects/" role="button" class="secondary">View Design Systems</a>
+        </footer>
+      </article>
+
+      <article class="domain-card">
+        <header>
+          <h3>DevOps & Game Asset Toolchains</h3>
+        </header>
+        <p>
+          Headless, containerized asset-processing toolchains and multi-architecture compilation pipelines designed for automated CI/CD workflows.
+        </p>
+        <ul class="domain-highlights">
+          <li>
+            <a href="/projects/docker-game-development-toolkit/"><strong>Docker Game Dev Toolkit</strong></a>: Multi-arch OCI image bundling Tiled 1.12, tile-extruder, and YAML transforms for seamless CI pipelines.
+          </li>
+          <li>
+            <a href="/projects/docker-aseprite-headless/"><strong>Docker Aseprite Headless</strong></a>: Immutable OCI builder compiling headless Aseprite on Ubuntu 24.04 LTS across amd64 and arm64.
+          </li>
+        </ul>
+        <footer>
+          <a href="/projects/" role="button" class="secondary">View DevOps Toolchains</a>
+        </footer>
+      </article>
+
+      <article class="domain-card">
+        <header>
+          <h3>Interactive Tools & Ecosystem</h3>
+        </header>
+        <p>
+          Lightweight deterministic browser applications, algorithmic generators, and game engine extension libraries.
+        </p>
+        <ul class="domain-highlights">
+          <li>
+            <a href="/tools/spiderex/"><strong>Spiderex</strong></a>: Daily guitar fingering drill engine powered by a deterministic calendar-seeded PRNG and ASCII tablature generator.
+          </li>
+          <li>
+            <a href="/pgmmv/"><strong>PGMMV Plugin Suite</strong></a>: Battle-tested gameplay plugins (collisions, coordinates, tile snapping, storage) and complete TypeScript definitions.
+          </li>
+        </ul>
+        <footer>
+          <a href="/tools/" role="button" class="secondary">Launch Tools</a>
+        </footer>
+      </article>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero-overview {
+    margin-block-end: 3.5rem;
+    padding-block-end: 2rem;
+    border-block-end: 1px solid var(--pt-border-color);
+  }
+
+  .lead-text {
+    font-size: 1.15rem;
+    line-height: 1.6;
+    margin-block-end: 1.75rem;
+  }
+
+  .hero-cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .domains-overview {
+    margin-block-end: 3rem;
+  }
+
+  .section-heading {
+    margin-block-end: 1.75rem;
+  }
+
+  .section-heading h2 {
+    margin-block-end: 0.25rem;
+  }
+
+  .section-heading p {
+    color: var(--pt-muted-color);
+  }
+
+  .domain-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-block-end: 1.5rem;
+  }
+
+  .domain-card h3 {
+    margin-block-end: 0.5rem;
+    font-size: 1.15rem;
+  }
+
+  .domain-highlights {
+    padding-inline-start: 1.25rem;
+    margin-block: 1rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .domain-highlights li {
+    margin-block-end: 0.5rem;
+  }
+
+  .domain-card footer {
+    margin-block-start: 1rem;
+  }
+</style>
