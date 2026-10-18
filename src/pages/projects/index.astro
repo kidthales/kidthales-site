@@ -1,0 +1,324 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const allProjects = await getCollection('projects');
+
+// Sort: Tier 2 first, then by title
+const sortedProjects = allProjects.sort((a, b) => {
+  if (a.data.clusterOrder !== b.data.clusterOrder) {
+    return a.data.clusterOrder - b.data.clusterOrder;
+  }
+  if (a.data.tier !== b.data.tier) {
+    return b.data.tier - a.data.tier;
+  }
+  return a.data.title.localeCompare(b.data.title);
+});
+
+const clusters = [
+  {
+    id: 'ui-design',
+    title: 'Accessible UI & Design Systems',
+    description: 'Ultra-lightweight, standards-compliant CSS frameworks and verified colorblind-safe palette generators.',
+  },
+  {
+    id: 'devops-toolchains',
+    title: 'DevOps & Game Asset Toolchains',
+    description: 'Multi-architecture OCI container images and automated asset-processing pipelines for CI/CD workflows.',
+  },
+  {
+    id: 'tools-ecosystem',
+    title: 'Interactive Tools & Ecosystem',
+    description: 'Deterministic browser utilities, algorithms, and modular game engine extensions.',
+  },
+];
+
+// Collect all unique tags for filtering
+const allTags = Array.from(
+  new Set(allProjects.flatMap((p) => p.data.tags))
+).sort();
+---
+
+<BaseLayout
+  title="Projects"
+  subtitle="Open-source software, accessible design systems, and headless build toolchains."
+  description="Software engineering projects and open-source libraries by kidthales: accessible design systems, headless devops pipelines, and developer tooling."
+>
+  <section class="projects-intro">
+    <p>
+      A curated collection of production utilities, developer toolchains, and open-source libraries. Every project emphasizes data sovereignty, mathematical correctness, minimal runtime overhead, and verified accessibility.
+    </p>
+
+    <div class="filter-controls" aria-label="Filter projects">
+      <label for="tagFilter"><strong>Filter by tag:</strong></label>
+      <div class="filter-bar">
+        <button type="button" class="filter-btn active" data-filter="all" aria-pressed="true">
+          All ({allProjects.length})
+        </button>
+        {allTags.map((tag) => (
+          <button type="button" class="filter-btn" data-filter={tag} aria-pressed="false">
+            {tag}
+          </button>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {clusters.map((cluster) => {
+    const clusterProjects = sortedProjects.filter(
+      (p) => p.data.cluster === cluster.id
+    );
+    if (clusterProjects.length === 0) return null;
+
+    return (
+      <section class="cluster-section" data-cluster-section={cluster.id}>
+        <header class="cluster-header">
+          <h2>{cluster.title}</h2>
+          <p class="cluster-desc">{cluster.description}</p>
+        </header>
+
+        <div class="grid">
+          {clusterProjects.map((project) => (
+            <article
+              class="project-card"
+              data-project-card
+              data-tags={project.data.tags.join(',')}
+              data-cluster={project.data.cluster}
+            >
+              <header>
+                <div class="project-title-row">
+                  <h3>
+                    {project.data.tier === 2 ? (
+                      <a href={`/projects/${project.id}/`}>{project.data.title}</a>
+                    ) : project.data.link ? (
+                      <a href={project.data.link}>{project.data.title}</a>
+                    ) : (
+                      project.data.title
+                    )}
+                  </h3>
+                  <small class="status-badge">[{project.data.status}]</small>
+                </div>
+                <p class="summary-text">{project.data.summary}</p>
+              </header>
+
+              {project.data.registry?.pullSnippet && (
+                <div class="pull-snippet">
+                  <pre><code>{project.data.registry.pullSnippet}</code></pre>
+                </div>
+              )}
+
+              <div class="tag-list">
+                {project.data.tags.map((tag) => (
+                  <span class="project-tag">#{tag}</span>
+                ))}
+              </div>
+
+              <footer>
+                <div class="card-actions">
+                  {project.data.tier === 2 && (
+                    <a href={`/projects/${project.id}/`} role="button">
+                      Overview
+                    </a>
+                  )}
+                  {project.data.link && (
+                    <a href={project.data.link} role="button">
+                      Open Tool
+                    </a>
+                  )}
+                  {project.data.demo && !project.data.link && (
+                    <a
+                      href={project.data.demo}
+                      role="button"
+                      class="secondary"
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      Live Demo
+                    </a>
+                  )}
+                  <a
+                    href={`https://github.com/${project.data.repo}`}
+                    role="button"
+                    class="secondary"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    GitHub
+                  </a>
+                </div>
+              </footer>
+            </article>
+          ))}
+        </div>
+      </section>
+    );
+  })}
+</BaseLayout>
+
+<style>
+  .projects-intro {
+    margin-block-end: 2.5rem;
+  }
+
+  .filter-controls {
+    margin-block-start: 1.5rem;
+  }
+
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-block-start: 0.5rem;
+  }
+
+  .filter-btn {
+    padding-block: 0.25rem;
+    padding-inline: 0.6rem;
+    font-size: 0.85rem;
+    border-radius: var(--pt-radius);
+    background-color: var(--pt-card-bg);
+    color: var(--pt-muted-color);
+    border: 1px solid var(--pt-border-color);
+    cursor: pointer;
+  }
+
+  .filter-btn:hover {
+    color: var(--pt-primary-hover);
+    border-color: var(--pt-primary);
+  }
+
+  .filter-btn.active {
+    background-color: var(--pt-primary);
+    color: var(--pt-primary-contrast);
+    border-color: var(--pt-primary);
+  }
+
+  .cluster-section {
+    margin-block-end: 3rem;
+  }
+
+  .cluster-header {
+    margin-block-end: 1.25rem;
+    border-block-end: 1px solid var(--pt-border-color);
+    padding-block-end: 0.5rem;
+  }
+
+  .cluster-header h2 {
+    margin-block-end: 0.25rem;
+  }
+
+  .cluster-desc {
+    color: var(--pt-muted-color);
+    margin-block-end: 0;
+  }
+
+  .project-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-block-end: 1.5rem;
+  }
+
+  .project-title-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-block-end: 0.5rem;
+  }
+
+  .project-title-row h3 {
+    margin-block-end: 0;
+    font-size: 1.2rem;
+  }
+
+  .status-badge {
+    font-family: var(--pt-font-mono);
+    color: var(--pt-muted-color);
+    white-space: nowrap;
+  }
+
+  .summary-text {
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .pull-snippet {
+    margin-block: 0.75rem;
+  }
+
+  .pull-snippet pre {
+    margin-block-end: 0;
+    padding: 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-block: 0.75rem;
+  }
+
+  .project-tag {
+    font-family: var(--pt-font-mono);
+    font-size: 0.75rem;
+    color: var(--pt-muted-color);
+  }
+
+  .card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-block-start: 1rem;
+  }
+
+  .card-actions a[role='button'] {
+    font-size: 0.85rem;
+    padding-block: 0.35rem;
+    padding-inline: 0.75rem;
+  }
+</style>
+
+<script>
+  function initFilter() {
+    const filterButtons = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+    const cards = document.querySelectorAll<HTMLElement>('[data-project-card]');
+    const sections = document.querySelectorAll<HTMLElement>('[data-cluster-section]');
+
+    function applyFilter(filter: string) {
+      filterButtons.forEach((btn) => {
+        const isActive = btn.dataset.filter === filter;
+        btn.classList.toggle('active', isActive);
+        btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      });
+
+      cards.forEach((card) => {
+        const tags = (card.dataset.tags || '').split(',');
+        const visible = filter === 'all' || tags.includes(filter);
+        card.style.display = visible ? '' : 'none';
+      });
+
+      // Hide section headers if all cards in the cluster are hidden
+      sections.forEach((section) => {
+        const visibleCards = section.querySelectorAll<HTMLElement>(
+          '[data-project-card]:not([style*="display: none"])'
+        );
+        section.style.display = visibleCards.length > 0 ? '' : 'none';
+      });
+    }
+
+    filterButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const filter = btn.dataset.filter || 'all';
+        applyFilter(filter);
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFilter);
+  } else {
+    initFilter();
+  }
+</script>

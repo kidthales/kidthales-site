@@ -42,3 +42,14 @@ test('new tool routes exist in dist when built', () => {
     assert.ok(existsSync(spiderexIndex), 'dist/tools/spiderex/index.html missing');
   }
 });
+
+test('projects index and tier-2 routes exist in dist when built', () => {
+  if (existsSync(dist)) {
+    assert.ok(existsSync(join(dist, 'projects', 'index.html')), 'dist/projects/index.html missing');
+    assert.ok(existsSync(join(dist, 'projects', 'picotol', 'index.html')), 'dist/projects/picotol missing');
+    assert.ok(existsSync(join(dist, 'projects', 'tol-palettes', 'index.html')), 'dist/projects/tol-palettes missing');
+    assert.ok(existsSync(join(dist, 'projects', 'docker-game-development-toolkit', 'index.html')), 'dist/projects/docker-game-development-toolkit missing');
+    assert.ok(existsSync(join(dist, 'projects', 'docker-aseprite-headless', 'index.html')), 'dist/projects/docker-aseprite-headless missing');
+  }
+});
+

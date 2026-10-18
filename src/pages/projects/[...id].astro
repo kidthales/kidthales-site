@@ -1,0 +1,148 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects
+    .filter((project) => project.data.tier === 2)
+    .map((project) => ({
+      params: { id: project.id },
+      props: { project },
+    }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+---
+
+<BaseLayout
+  title={project.data.title}
+  subtitle={project.data.summary}
+  description={project.data.summary}
+>
+  <nav aria-label="Breadcrumb" class="breadcrumbs">
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/projects/">Projects</a></li>
+      <li aria-current="page"><span>{project.data.title}</span></li>
+    </ul>
+  </nav>
+
+  <section class="project-meta-panel">
+    <div class="grid">
+      <div>
+        <p><strong>Status:</strong> <span class="badge">[{project.data.status}]</span></p>
+        <p><strong>Category:</strong> {project.data.clusterLabel}</p>
+        {project.data.release && (
+          <p><strong>Release:</strong> <code>{project.data.release}</code></p>
+        )}
+      </div>
+      <div>
+        <p><strong>Repository:</strong> <a href={`https://github.com/${project.data.repo}`} target="_blank" rel="noopener">{project.data.repo}</a></p>
+        {project.data.demo && (
+          <p><strong>Live Demo:</strong> <a href={project.data.demo} target="_blank" rel="noopener">{project.data.demo}</a></p>
+        )}
+        {project.data.docs && (
+          <p><strong>Documentation:</strong> <a href={project.data.docs} target="_blank" rel="noopener">README & Reference</a></p>
+        )}
+      </div>
+    </div>
+
+    {project.data.registry?.pullSnippet && (
+      <div class="registry-box">
+        <label><strong>Container Image:</strong></label>
+        <pre><code>{project.data.registry.pullSnippet}</code></pre>
+      </div>
+    )}
+
+    <div class="tag-cloud">
+      {project.data.tags.map((tag) => (
+        <span class="tag">#{tag}</span>
+      ))}
+    </div>
+  </section>
+
+  <article class="project-content">
+    <Content />
+  </article>
+
+  <footer class="project-nav-footer">
+    <p><a href="/projects/" role="button" class="secondary">← Back to Projects Overview</a></p>
+  </footer>
+</BaseLayout>
+
+<style>
+  .breadcrumbs {
+    margin-block-end: 1.5rem;
+    font-size: 0.9rem;
+  }
+
+  .breadcrumbs ul {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    gap: 0.5rem;
+  }
+
+  .breadcrumbs li:not(:last-child)::after {
+    content: '/';
+    margin-inline-start: 0.5rem;
+    color: var(--pt-muted-color);
+  }
+
+  .project-meta-panel {
+    background-color: var(--pt-card-bg);
+    border: 1px solid var(--pt-border-color);
+    border-radius: var(--pt-radius);
+    padding: 1.25rem;
+    margin-block-end: 2.5rem;
+  }
+
+  .project-meta-panel p {
+    margin-block-end: 0.5rem;
+    font-size: 0.95rem;
+  }
+
+  .badge {
+    font-family: var(--pt-font-mono);
+  }
+
+  .registry-box {
+    margin-block-start: 1rem;
+  }
+
+  .registry-box label {
+    display: block;
+    margin-block-end: 0.25rem;
+  }
+
+  .registry-box pre {
+    margin-block-end: 0;
+    padding: 0.6rem;
+    font-size: 0.85rem;
+  }
+
+  .tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-block-start: 1rem;
+    font-family: var(--pt-font-mono);
+    font-size: 0.8rem;
+    color: var(--pt-muted-color);
+  }
+
+  .project-content {
+    margin-block-end: 3rem;
+    line-height: 1.65;
+  }
+
+  .project-nav-footer {
+    border-block-start: 1px solid var(--pt-border-color);
+    padding-block-start: 1.5rem;
+    margin-block-start: 2rem;
+  }
+</style>
